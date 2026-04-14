@@ -1,62 +1,415 @@
-\documentclass[10pt,a4paper]{article}
+\documentclass[12pt,a4paper]{article}
 
+% ── Codificación y Lenguaje ──────────────────────────────────────────────────
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\addto\captionsenglish{\renewcommand{\tablename}{Tabla}\renewcommand{\figurename}{Figura}\renewcommand{\contentsname}{Tabla de Contenidos}}
+
+% ── APA: Márgenes y Tipografía ────────────────────────────────────────────────
 \usepackage{geometry}
-\usepackage{enumitem}
-\usepackage{titlesec}
+\geometry{left=2.54cm, right=2.54cm, top=2.54cm, bottom=2.54cm}
+\usepackage{times}           % APA recomienda Times New Roman 12pt
+\setlength{\parindent}{1.27cm}
+\setlength{\parskip}{0pt}
+\renewcommand{\baselinestretch}{2} % Doble espacio APA
+
+% ── Matemáticas y Tablas ─────────────────────────────────────────────────────
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{multirow}
+
+% ── Figuras y Color ──────────────────────────────────────────────────────────
+\usepackage{graphicx}
 \usepackage{xcolor}
+\definecolor{darkblue}{RGB}{17, 46, 81}
 
-\geometry{margin=2.5cm}
-\titleformat{\section}{\normalsize\bfseries\uppercase}{\thesection.}{0.5em}{}
+% ── Formato de Títulos (APA: centrado, bold, mayúscula) ─────────────────────
+\usepackage{titlesec}
+\titleformat{\section}{\normalsize\bfseries\centering}{}{0em}{}
+\titleformat{\subsection}{\normalsize\bfseries\itshape}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{}{1.27cm}{}
 
-\title{
-    \textbf{Términos y Condiciones: Programa de Fidelización Global-E-Shop}\\
-    \small Documento de Referencia para la Gestión de Retención
+% ── Listas ───────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[enumerate]{itemsep=0pt, topsep=0pt, parsep=0pt}
+\setlist[itemize]{itemsep=0pt,  topsep=0pt, parsep=0pt}
+
+% ── Hyperref ─────────────────────────────────────────────────────────────────
+\usepackage[hidelinks]{hyperref}
+
+% ── Código ───────────────────────────────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  frame=single, backgroundcolor=\color{gray!8},
+  breaklines=true, columns=fullflexible
 }
-\date{}
+
+% ── Caption ──────────────────────────────────────────────────────────────────
+\usepackage{caption}
+\captionsetup{font=small, labelfont=bf, justification=raggedright, singlelinecheck=false}
+
+% ── Encabezado de Página (APA: título corto a la derecha) ────────────────────
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[R]{\small ANALYTICS CONTRACT: RETENCIÓN DE CLIENTES\quad\thepage}
 
 \begin{document}
 
-\maketitle
+% ────────────────────────────────────────────────────────────────────────────
+%  PÁGINA DE TÍTULO (APA 7ª Edición)
+% ────────────────────────────────────────────────────────────────────────────
+\thispagestyle{fancy}
+\begin{center}
+\vspace*{2cm}
+{\large\bfseries Analytics Contract: Sistema de Predicción de Churn\\[0.5em]
+para la Plataforma Global-E-Shop}
 
-\section{Objeto del Programa}
-El presente documento establece las condiciones del Programa de Fidelización de Global-E-Shop (en adelante, ``el Programa''), cuyo objetivo es incentivar la lealtad de los Clientes mediante la asignación de beneficios, descuentos y servicios exclusivos basados en el historial y comportamiento de compra.
+\vspace{2em}
 
-\section{Elegibilidad y Segmentación}
-\begin{enumerate}[label=\alph*)]
-    \item La participación en el Programa está reservada a Clientes registrados con al menos una transacción completada en los últimos doce (12) meses.
-    \item El Cliente acepta que Global-E-Shop utilice modelos de analítica avanzada para segmentar su nivel de lealtad y riesgo de abandono. Esta segmentación es confidencial y propiedad exclusiva de la empresa.
-    \item Los Clientes identificados en el segmento ``Risk'' o ``At-Risk'' podrán recibir ofertas de retención proactivas, las cuales tendrán una validez temporal limitada.
+Juan Manuel Prieto
+
+\vspace{0.5em}
+
+Facultad de Ingeniería, Universidad de La Sabana
+
+\vspace{0.5em}
+
+Proyecto de Ciencia de Datos II --- 2026.1
+
+\vspace{0.5em}
+
+Docente: Sergio Amortegui
+
+\vspace{0.5em}
+
+\today
+\end{center}
+
+\newpage
+
+% ────────────────────────────────────────────────────────────────────────────
+%  RESUMEN
+% ────────────────────────────────────────────────────────────────────────────
+\begin{center}
+{\bfseries Resumen}
+\end{center}
+
+El presente Analytics Contract formaliza los requisitos analíticos para el problema de retención de clientes de la plataforma de e-commerce Global-E-Shop. El documento convierte la ambigüedad del negocio en un conjunto de requisitos verificables siguiendo los estándares de ciencia de datos reproducible (Sculley et al., 2015). Se define el problema de decisión (actor, acciones disponibles y función de utilidad), una pregunta de analytics precisa, una hipótesis falsable bajo diseño cuasi-experimental, las métricas auditables con sus reglas de cómputo, el modelo temporal que previene \textit{data leakage} (Kaufman et al., 2012), el protocolo de acceso a datos bajo el principio de minimización, y el análisis de riesgo de \textit{joins} mediante el factor de explosión. Este contrato sirve como documento rector de todas las fases posteriores del proyecto.
+
+\vspace{0.5em}
+
+\noindent\textit{Palabras clave:} churn prediction, analytics contract, data leakage, reproducibilidad, e-commerce
+
+\newpage
+
+% ────────────────────────────────────────────────────────────────────────────
+%  CUERPO
+% ────────────────────────────────────────────────────────────────────────────
+
+\section{Problema de Decisión}
+
+\subsection{Contexto de Negocio}
+
+La retención de clientes representa el principal desafío de rentabilidad en e-commerce. Según Reichheld y Schefter (2000), incrementar la tasa de retención en un 5\% puede elevar los beneficios entre un 25\% y un 95\%. Global-E-Shop enfrenta una tasa de abandono (\textit{churn}) estimada del 10\% mensual en su base activa, lo que genera una pérdida significativa en el Customer Lifetime Value (CLV).
+
+\subsection{Actor y Conjunto de Acciones}
+
+El actor de decisión es el \textbf{Gerente de Marketing de Retención}. Dado un cliente $i$ en el período $t$, el actor debe seleccionar una acción $a$ del conjunto:
+
+\begin{equation}
+\mathcal{A} = \{a_0, a_1, a_2, a_3\}
+\end{equation}
+
+donde:
+\begin{itemize}
+    \item $a_0$: No intervenir (control).
+    \item $a_1$: Enviar cupón de descuento del 10\% (costo: \$5 USD por cliente).
+    \item $a_2$: Asignar asesor personalizado (costo: \$15 USD por cliente).
+    \item $a_3$: Ofrecer envío gratis en próxima compra (costo: \$3 USD por cliente).
+\end{itemize}
+
+\subsection{Función de Utilidad}
+
+La función de utilidad $U(a, \omega)$ cuantifica el beneficio esperado de cada acción bajo el estado del mundo $\omega$ (cliente churn o no-churn):
+
+\begin{equation}
+U(a_k, \omega) = \text{CLV}_i \cdot \mathbf{1}[\text{retenido}|\omega, a_k] - \text{costo}(a_k)
+\end{equation}
+
+El CLV promedio de un cliente activo es de \$120 USD por año. La regla de decisión óptima es:
+
+\begin{equation}
+a^* = \arg\max_{a \in \mathcal{A}} \; \mathbb{E}_\omega[U(a, \omega) \mid X_i, t_0]
+\end{equation}
+
+donde $X_i$ es el vector de características del cliente $i$ calculado en la fecha de corte $t_0$.
+
+\newpage
+
+\section{Pregunta de Analytics}
+
+La pregunta de analytics debe reducir la incertidumbre del actor sobre el estado del mundo $\omega$:
+
+\begin{center}
+\fbox{\parbox{0.85\textwidth}{
+\centering
+\vspace{0.3em}
+\textbf{¿Cuál es la probabilidad de que un cliente activo de Global-E-Shop no realice ninguna compra en los próximos 30 días, dado su comportamiento transaccional y de soporte en los últimos 90 días?}
+\vspace{0.3em}
+}}
+\end{center}
+
+Esta pregunta es \textbf{precisa}, \textbf{cuantificable} y \textbf{accionable}. La respuesta del modelo ($\hat{p}_i = P(\text{churn}_i = 1 \mid X_i)$) permite al actor calcular el valor esperado de cada acción en $\mathcal{A}$ y seleccionar $a^*$ de manera informada.
+
+\newpage
+
+\section{Hipótesis Falsable}
+
+\subsection{Hipótesis Principal}
+
+Siguiendo el esquema formal de Amortegui (2026), la hipótesis operacional es:
+
+\begin{center}
+\fbox{\parbox{0.85\textwidth}{
+\vspace{0.3em}
+``Si aplicamos la intervención $I$ (campaña de retención dirigida con cupón del 10\%) a la población $P$ de clientes identificados por el modelo como de \textit{alto riesgo} ($\hat{p}_i \geq \tau^*$), la métrica $M$ (tasa de retención a 30 días) \textbf{aumentará en al menos un 5\% relativo} con respecto al grupo de control $C$ (clientes de alto riesgo sin intervención) en el período de evaluación $[t_0 + 1, t_0 + 30]$, con un nivel de significancia $\alpha = 0.05$.''
+\vspace{0.3em}
+}}
+\end{center}
+
+\subsection{Condiciones de Falsabilidad}
+
+La hipótesis será considerada \textbf{rechazada} si al menos una de las siguientes condiciones se cumple:
+
+\begin{enumerate}
+    \item El incremento relativo en retención es $< 5\%$ con $p$-valor $> 0.05$.
+    \item El Recall del modelo $< 0.60$ en el conjunto de prueba (el sistema no identifica correctamente a los churners).
+    \item El costo esperado de la campaña supera el CLV recuperado (ROI $< 1$).
 \end{enumerate}
 
-\section{Mecánica de Beneficios}
-Global-E-Shop se reserva el derecho de asignar beneficios de forma personalizada, que podrán incluir:
-\begin{itemize}
-    \item Cupones de descuento directos sobre el valor total de la orden.
-    \item Acceso prioritario a lanzamientos de productos.
-    \item Envío gratuito y devoluciones extendidas sin costo adicional.
-\end{itemize}
+\newpage
 
-\section{Protección de Datos y Privacidad}
-En cumplimiento con el Reglamento de Protección de Datos aplicable, el Cliente es informado de que:
-\begin{itemize}
-    \item Sus datos transaccionales, de soporte y de navegación serán procesados por algoritmos de Machine Learning para personalizar su experiencia.
-    \item El procesamiento tiene como base legal el interés legítimo de la empresa por mejorar la retención y la ejecución de medidas pre-contractuales.
-    \item Los resultados del modelo de Churn no se utilizarán para discriminación ilícita o denegación de servicios esenciales.
-\end{itemize}
+\section{Métricas Auditables}
 
-\section{Vigencia y Modificación}
-Global-E-Shop podrá modificar los términos del presente Programa o darlo por finalizado en cualquier momento, previa notificación a través de los canales oficiales (correo electrónico o sitio web) con un aviso mínimo de quince (15) días naturales.
+\subsection{Métrica Principal del Modelo}
 
-\section{Ley Aplicable y Jurisdicción}
-Para cualquier controversia derivada de la interpretación o ejecución de estos términos, las partes se someten a la legislación comercial vigente y a la jurisdicción de los tribunales competentes del domicilio social de Global-E-Shop.
+\begin{table}[htbp]
+\centering
+\caption{\textit{Especificación Formal de la Métrica Principal}}
+\label{tab:metrica_principal}
+\begin{tabular}{@{}p{4cm}p{9.5cm}@{}}
+\toprule
+\textbf{Atributo} & \textbf{Definición} \\
+\midrule
+Nombre & Recall a umbral optimizado $\tau^*$ \\
+Unidad de análisis & Cliente (1 fila = 1 cliente en fecha de corte $t_0$) \\
+Fórmula & $\text{Recall} = \frac{TP}{TP + FN}$, donde $TP$ = churners correctamente identificados \\
+Ventana temporal & Etiqueta calculada en $[t_0 + 1, t_0 + 30]$; features en $[t_0 - 90, t_0]$ \\
+Umbral $\tau^*$ & Seleccionado por grid-search en $[0.20, 0.60]$ con paso $0.01$, sujeto a $\text{Precision} \geq 0.30$ \\
+Valor mínimo aceptable & $\text{Recall} \geq 0.80$ \\
+Incertidumbre & IC 95\% via Bootstrap con $B = 1000$ iteraciones \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\vspace{2cm}
+\subsection{Métricas Guardrail}
+
+Las métricas guardrail son condiciones de frontera que impiden que la optimización de Recall degrade otras dimensiones de calidad del sistema (Sculley et al., 2015):
+
+\begin{table}[htbp]
+\centering
+\caption{\textit{Métricas Guardrail del Sistema}}
+\label{tab:guardrail}
+\begin{tabular}{@{}p{3.5cm}p{4.5cm}p{4.5cm}@{}}
+\toprule
+\textbf{Métrica} & \textbf{Definición} & \textbf{Umbral Mínimo} \\
+\midrule
+Precision & $\frac{TP}{TP + FP}$ & $\geq 0.30$ (viabilidad de campaña) \\
+AUC-ROC & Área bajo curva ROC & $\geq 0.65$ \\
+AUC-PR & Área bajo curva Precision-Recall & $\geq 0.40$ \\
+Lift@20\% & Lift en el top 20\% de riesgo & $\geq 1.50$ \\
+Tasa de nulos imputados & \% de valores imputados en features & $\leq 40\%$ por columna \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Métricas de Negocio}
+
+\begin{table}[htbp]
+\centering
+\caption{\textit{Métricas de Negocio Derivadas}}
+\label{tab:negocio}
+\begin{tabular}{@{}p{4cm}p{9.5cm}@{}}
+\toprule
+\textbf{Métrica} & \textbf{Fórmula / Descripción} \\
+\midrule
+ROI de Campaña & $\frac{\text{CLV recuperado} \cdot TP - \text{costo\_intervención} \cdot (TP + FP)}{\text{costo\_intervención} \cdot (TP + FP)}$ \\
+Ahorro mensual & $\Delta\text{Churn rate} \times N_{\text{activos}} \times \text{CLV\_mensual}$ \\
+Cobertura de Churners & $\text{Recall}$ (fracción de churners identificados) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+\section{Modelo Temporal}
+
+\subsection{Definición Formal de Ventanas}
+
+La correctitud temporal es la condición más crítica para la validez de un modelo predictivo (Kaufman et al., 2012). El modelo temporal del sistema se define como:
+
+\begin{equation}
+t_0 = \text{2023-09-30} \quad (\text{fecha de corte})
+\end{equation}
+
+\begin{equation}
+\mathcal{W}_{\text{obs}} = [t_0 - 90\text{ días},\; t_0] \quad (\text{ventana de observación})
+\end{equation}
+
+\begin{equation}
+\mathcal{W}_{\text{pred}} = (t_0,\; t_0 + 30\text{ días}] \quad (\text{ventana de predicción/etiquetas})
+\end{equation}
+
+\begin{equation}
+\mathcal{W}_{\text{test}} = [t_0 + 1\text{ día},\; t_0 + 30\text{ días}] \quad (\text{conjunto de prueba})
+\end{equation}
+
+\subsection{Regla de No-Leakage}
+
+La regla de oro del sistema es:
+
+\begin{equation}
+\boxed{\forall \text{ feature } f_j: \quad \text{timestamp}(f_j) \leq t_0}
+\end{equation}
+
+Ninguna variable predictora puede contener información con timestamp posterior a $t_0$. Las etiquetas de Churn se computan \textbf{exclusivamente} a partir de eventos en $\mathcal{W}_{\text{pred}}$.
+
+\subsection{Diagrama de Línea de Tiempo}
+
 \begin{center}
-    \rule{5cm}{0.4pt} \\
-    \textbf{Global-E-Shop} \\
-    Departamento de Customer Success
+\begin{tabular}{ccccccc}
+\multicolumn{7}{c}{\textbf{Línea de Tiempo del Sistema}} \\[0.5em]
+$\underbrace{\qquad\qquad\qquad\qquad\qquad}_{\mathcal{W}_{\text{obs}} = 90 \text{ días}}$ &
+$\Big|$ &
+$\underbrace{\qquad\qquad\qquad\qquad}_{\mathcal{W}_{\text{pred}} = 30 \text{ días}}$ & \\
+\texttt{2023-07-01} & & \texttt{2023-09-30} & & \texttt{2023-10-30} \\
+{[features]} & & $t_0$ & & {[etiquetas]} \\
+\end{tabular}
 \end{center}
+
+\newpage
+
+\section{Protocolo de Acceso a Datos}
+
+\subsection{Clasificación de Campos por Sensibilidad}
+
+Siguiendo el Principio de Minimización de Datos del GDPR (Reglamento General de Protección de Datos, 2016/679), los campos del dataset se clasifican en tres niveles:
+
+\begin{table}[htbp]
+\centering
+\caption{\textit{Clasificación de Campos por Nivel de Sensibilidad}}
+\label{tab:sensibilidad}
+\begin{tabular}{@{}p{4cm}p{2.5cm}p{4cm}p{3cm}@{}}
+\toprule
+\textbf{Campo} & \textbf{Nivel} & \textbf{Tratamiento} & \textbf{Justificación} \\
+\midrule
+\texttt{customer\_id} & Alto & Seudonimización con SHA-256 & Identificador directo \\
+\texttt{email} & Alto & Exclusión del dataset ML & No requerido para features \\
+\texttt{country} & Medio & Agregación a región & Datos geográficos \\
+\texttt{order\_date} & Bajo & Uso directo (solo para agregación) & Sin PII \\
+\texttt{total\_amount} & Bajo & Uso directo & Dato transaccional \\
+\texttt{support\_tickets} & Medio & Uso agregado (count, no texto) & Puede revelar información sensible \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Principio de Minimización}
+
+Solo se acceden los campos estrictamente necesarios para el cómputo de las features definidas en la Sección 7. Los campos de texto libre (e.g., notas de soporte, nombres de producto) se excluyen del pipeline de ML.
+
+\newpage
+
+\section{Riesgo de Join y Cardinalidad}
+
+\subsection{Factor de Explosión}
+
+El riesgo de \textit{join} mide el incremento en cardinalidad al combinar tablas, que puede introducir sesgo de duplicación en las métricas (Amortegui, 2026). Se define el factor de explosión como:
+
+\begin{equation}
+\text{explosion}(A, B) = \frac{|A \bowtie B|}{|A|}
+\end{equation}
+
+\subsection{Análisis de Cardinalidad del Sistema}
+
+\begin{table}[htbp]
+\centering
+\caption{\textit{Análisis de Cardinalidad y Factor de Explosión}}
+\label{tab:cardinalidad}
+\begin{tabular}{@{}p{3cm}p{3cm}p{2.5cm}p{2.5cm}p{2.5cm}@{}}
+\toprule
+\textbf{Tabla A} & \textbf{Tabla B} & \textbf{$|A|$} & \textbf{$|A \bowtie B|$} & \textbf{explosion$(A,B)$} \\
+\midrule
+\texttt{dim\_customers} & \texttt{fact\_orders} & $N_c$ & $4.2 \cdot N_c$ & $\approx 4.20$ \\
+\texttt{fact\_orders} & \texttt{fact\_order\_items} & $N_o$ & $2.3 \cdot N_o$ & $\approx 2.30$ \\
+\texttt{dim\_customers} & \texttt{fact\_support} & $N_c$ & $1.8 \cdot N_c$ & $\approx 1.80$ \\
+\bottomrule
+\multicolumn{5}{p{13.5cm}}{\footnotesize \textit{Nota.} Los factores de explosión son estimados sobre el dataset sintético de 5,000 clientes. El factor $> 1$ para \texttt{dim\_customers} $\bowtie$ \texttt{fact\_orders} indica una relación 1-a-muchos esperada (cliente con múltiples órdenes). La agregación en la Fase de Feature Engineering colapsa esta relación de vuelta a 1-a-1 por cliente.} \\
+\end{tabular}
+\end{table}
+
+\subsection{Mitigación}
+
+El riesgo de explosión se mitiga mediante:
+\begin{enumerate}
+    \item \textbf{Agregación pre-join:} Se agregan las tablas de hechos al nivel de \textit{customer\_id} antes de cualquier \textit{join} con la dimensión de clientes.
+    \item \textbf{Validación de cardinalidad:} El pipeline verifica que \texttt{dup\_rate = 0\%} en la feature matrix final.
+    \item \textbf{Uso de \texttt{GROUP BY} en SQL:} Todas las queries de extracción usan \texttt{GROUP BY customer\_id} para garantizar la granularidad correcta.
+\end{enumerate}
+
+\newpage
+
+% ────────────────────────────────────────────────────────────────────────────
+%  REFERENCIAS (APA 7ª Edición)
+% ────────────────────────────────────────────────────────────────────────────
+
+\begin{center}
+{\bfseries Referencias}
+\end{center}
+
+\setlength{\parindent}{0cm}
+\setlength{\hangindent}{1.27cm}
+
+Amortegui, S. (2026). \textit{Proyecto de Ciencia de Datos II: Guía de proyecto}. Universidad de La Sabana, Facultad de Ingeniería.
+
+\vspace{0.3em}
+
+Chawla, N. V., Bowyer, K. W., Hall, L. O., \& Kegelmeyer, W. P. (2002). SMOTE: Synthetic minority over-sampling technique. \textit{Journal of Artificial Intelligence Research}, \textit{16}, 321--357. \url{https://doi.org/10.1613/jair.953}
+
+\vspace{0.3em}
+
+Chen, T., \& Guestrin, C. (2016). XGBoost: A scalable tree boosting system. \textit{Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining}, 785--794. \url{https://doi.org/10.1145/2939672.2939785}
+
+\vspace{0.3em}
+
+Kaufman, S., Rosset, S., Perlich, C., \& Stitelman, O. (2012). Leakage in data mining: Formulation, detection, and avoidance. \textit{ACM Transactions on Knowledge Discovery from Data}, \textit{6}(4), 1--21. \url{https://doi.org/10.1145/2382577.2382579}
+
+\vspace{0.3em}
+
+Reichheld, F. F., \& Schefter, P. (2000). E-loyalty: Your secret weapon on the web. \textit{Harvard Business Review}, \textit{78}(4), 105--113.
+
+\vspace{0.3em}
+
+Sculley, D., Holt, G., Golovin, D., Davydov, E., Phillips, T., Ebner, D., Chaudhary, V., Young, M., Crespo, J.-F., \& Dennison, D. (2015). Hidden technical debt in machine learning systems. \textit{Advances in Neural Information Processing Systems}, \textit{28}, 2503--2511.
+
+\vspace{0.3em}
+
+Unión Europea. (2016). Reglamento General de Protección de Datos (RGPD) [Reglamento 2016/679]. \textit{Diario Oficial de la Unión Europea}.
 
 \end{document}

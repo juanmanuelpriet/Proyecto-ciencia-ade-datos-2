@@ -1,21 +1,38 @@
-# Project-specific ignores
+# =============================================================================
+# .gitignore — Global-E-Shop Churn Predictor
+# =============================================================================
+
+# ── Datos y Modelos (artefactos pesados) ─────────────────────────────────────
 artifacts/data/
 artifacts/models/
+artifacts/pipeline.log
+
+# Sí versionar manifest y figuras
+!artifacts/manifest.json
+!artifacts/figures/
+
+# ── Base de datos y datos procesados (se regeneran con python main.py) ───────
 *.db
 *.parquet
 *.pkl
-artifacts/pipeline.log
-artifacts/manifest.json
 
-# Python
+# ── Python ───────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .venv/
 venv/
+env/
+.env
+*.egg-info/
+dist/
+build/
 
-# LaTeX / PDF
+# ── LaTeX auxiliares (se regeneran al compilar) ──────────────────────────────
 *.aux
 *.log
 *.out
@@ -23,13 +40,34 @@ venv/
 *.bbl
 *.blg
 *.synctex.gz
+*.synctex(busy)
 *.fdb_latexmk
 *.fls
+*.lof
+*.lot
 
-# System
+# Los PDFs SÍ se incluyen (entregables finales)
+!deliverables/*.pdf
+
+# ── Sistema Operativo ────────────────────────────────────────────────────────
 .DS_Store
+.DS_Store?
 Thumbs.db
+desktop.ini
 
-# Misc
+# ── IDEs ─────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*~
+
+# ── Documentos de validación internos ────────────────────────────────────────
+VALIDACION_PROYECTO.md
+PROMPT_MASTER.md
+README_VALIDACION.md
+RESUMEN_VALIDACION.docx
+
+# ── Miscelánea ────────────────────────────────────────────────────────────────
 test.pdf
 scratch/
+tmp/

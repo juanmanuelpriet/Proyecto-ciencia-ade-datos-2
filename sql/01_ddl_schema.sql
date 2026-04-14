@@ -212,3 +212,181 @@ CREATE TABLE IF NOT EXISTS ml_predictions_log (
 
 CREATE INDEX IF NOT EXISTS idx_pred_log_customer ON ml_predictions_log(customer_id);
 CREATE INDEX IF NOT EXISTS idx_pred_log_date ON ml_predictions_log(prediction_date);
+
+-- =============================================================================
+-- VISTAS DE AUDITORÍA Y CALIDAD DE DATOS (Fase III)
+-- Estas vistas implementan los chequeos de la Regla Stop/Go directamente
+-- en la base de datos, permitiendo auditoría sin ejecutar el pipeline Python.
+-- =============================================================================
+
+-- ---------------------------------------------------------------------------
+-- VISTA: Resumen de integridad de llaves por tabla
+-- Reporta: total, duplicados, orphan rate
+-- Satisface: Fase III — Integridad de Llaves (dup_rate, orphan_rate)
+-- ---------------------------------------------------------------------------
+CREATE VIEW IF NOT EXISTS v_key_integrity AS
+SELECT
+    'dim_customers'      AS table_name,
+    COUNT(*)             AS total_rows,
+    COUNT(*) - COUNT(DISTINCT customer_id) AS duplicate_keys,
+    ROUND((COUNT(*) - COUNT(DISTINCT customer_id)) * 100.0 / MAX(COUNT(*), 1), 4) AS dup_rate_pct,
+    NULL                 AS orphan_rows,
+    NULL                 AS orphan_rate_pct
+FROM dim_customers
+UNION ALL
+SELECT
+    'fact_orders',
+    COUNT(*),
+    COUNT(*) - COUNT(DISTINCT order_id),
+    ROUND((COUNT(*) - COUNT(DISTINCT order_id)) * 100.0 / MAX(COUNT(*), 1), 4),
+    SUM(CASE WHEN dc.customer_id IS NULL THEN 1 ELSE 0 END),
+    ROUND(SUM(CASE WHEN dc.customer_id IS NULL THEN 1 ELSE 0 END) * 100.0 / MAX(COUNT(*), 1), 4)
+FROM fact_orders fo
+LEFT JOIN dim_customers dc ON fo.customer_id = dc.customer_id
+UNION ALL
+SELECT
+    'fact_support_tickets',
+    COUNT(*),
+    COUNT(*) - COUNT(DISTINCT ticket_id),
+    ROUND((COUNT(*) - COUNT(DISTINCT ticket_id)) * 100.0 / MAX(COUNT(*), 1), 4),
+    SUM(CASE WHEN dc.customer_id IS NULL THEN 1 ELSE 0 END),
+    ROUND(SUM(CASE WHEN dc.customer_id IS NULL THEN 1 ELSE 0 END) * 100.0 / MAX(COUNT(*), 1), 4)
+FROM fact_support_tickets ft
+LEFT JOIN dim_customers dc ON ft.customer_id = dc.customer_id
+UNION ALL
+SELECT
+    'fact_order_items',
+    COUNT(*),
+    COUNT(*) - COUNT(DISTINCT item_id),
+    ROUND((COUNT(*) - COUNT(DISTINCT item_id)) * 100.0 / MAX(COUNT(*), 1), 4),
+    SUM(CASE WHEN fo.order_id IS NULL THEN 1 ELSE 0 END),
+    ROUND(SUM(CASE WHEN fo.order_id IS NULL THEN 1 ELSE 0 END) * 100.0 / MAX(COUNT(*), 1), 4)
+FROM fact_order_items foi
+LEFT JOIN fact_orders fo ON foi.order_id = fo.order_id;
+
+-- ---------------------------------------------------------------------------
+-- VISTA: Factor de explosión de joins (Fase II — Riesgo de Join)
+-- explosion(A, B) = |A ⋈ B| / |A|
+-- ---------------------------------------------------------------------------
+CREATE VIEW IF NOT EXISTS v_explosion_factors AS
+SELECT
+    'dim_customers ⋈ fact_orders'           AS join_name,
+    (SELECT COUNT(*) FROM dim_customers)     AS n_left,
+    (SELECT COUNT(*) FROM fact_orders)       AS n_right,
+    ROUND(
+        CAST((SELECT COUNT(*) FROM fact_orders) AS REAL) /
+        MAX((SELECT COUNT(*) FROM dim_customers), 1),
+        3
+    ) AS explosion_factor
+UNION ALL
+SELECT
+    'fact_orders ⋈ fact_order_items',
+    (SELECT COUNT(*) FROM fact_orders),
+    (SELECT COUNT(*) FROM fact_order_items),
+    ROUND(
+        CAST((SELECT COUNT(*) FROM fact_order_items) AS REAL) /
+        MAX((SELECT COUNT(*) FROM fact_orders), 1),
+        3
+    )
+UNION ALL
+SELECT
+    'dim_customers ⋈ fact_support_tickets',
+    (SELECT COUNT(*) FROM dim_customers),
+    (SELECT COUNT(*) FROM fact_support_tickets),
+    ROUND(
+        CAST((SELECT COUNT(*) FROM fact_support_tickets) AS REAL) /
+        MAX((SELECT COUNT(*) FROM dim_customers), 1),
+        3
+    );
+
+-- ---------------------------------------------------------------------------
+-- VISTA: Validación de invariantes de negocio (Fase II — Protocolo de Acceso)
+-- Reporta violaciones de las reglas de negocio implementadas como CHECK
+-- constraints en el DDL. Una vista separada permite auditarlas fácilmente.
+-- ---------------------------------------------------------------------------
+CREATE VIEW IF NOT EXISTS v_business_invariants AS
+SELECT
+    'delivery_date >= order_date'           AS invariant_name,
+    COUNT(*)                                AS total_checked,
+    SUM(CASE WHEN delivery_date < order_date THEN 1 ELSE 0 END) AS violations,
+    ROUND(
+        SUM(CASE WHEN delivery_date < order_date THEN 1 ELSE 0 END) * 100.0 / MAX(COUNT(*), 1),
+        4
+    ) AS violation_rate_pct
+FROM fact_orders
+WHERE delivery_date IS NOT NULL
+UNION ALL
+SELECT
+    'resolved_date >= created_date (support)',
+    COUNT(*),
+    SUM(CASE WHEN resolved_date < created_date THEN 1 ELSE 0 END),
+    ROUND(
+        SUM(CASE WHEN resolved_date < created_date THEN 1 ELSE 0 END) * 100.0 / MAX(COUNT(*), 1),
+        4
+    )
+FROM fact_support_tickets
+WHERE resolved_date IS NOT NULL
+UNION ALL
+SELECT
+    'total_amount >= 0 (orders)',
+    COUNT(*),
+    SUM(CASE WHEN total_amount < 0 THEN 1 ELSE 0 END),
+    ROUND(
+        SUM(CASE WHEN total_amount < 0 THEN 1 ELSE 0 END) * 100.0 / MAX(COUNT(*), 1),
+        4
+    )
+FROM fact_orders;
+
+-- ---------------------------------------------------------------------------
+-- VISTA: Cobertura del Feature Store (Regla Stop/Go — Cobertura de Joins)
+-- Verifica que todos los clientes en ml_churn_labels tengan features.
+-- Si coverage_pct < 100%, el snapshot debe ser rechazado (STOP).
+-- ---------------------------------------------------------------------------
+CREATE VIEW IF NOT EXISTS v_feature_coverage AS
+SELECT
+    COUNT(DISTINCT cl.customer_id)                            AS customers_with_labels,
+    COUNT(DISTINCT fs.customer_id)                            AS customers_with_features,
+    COUNT(DISTINCT cl.customer_id) - COUNT(DISTINCT fs.customer_id) AS customers_without_features,
+    ROUND(
+        COUNT(DISTINCT fs.customer_id) * 100.0 /
+        MAX(COUNT(DISTINCT cl.customer_id), 1),
+        2
+    ) AS coverage_pct,
+    CASE
+        WHEN COUNT(DISTINCT fs.customer_id) = COUNT(DISTINCT cl.customer_id)
+        THEN 'GO — Cobertura 100%'
+        ELSE 'STOP — Clientes sin features'
+    END AS stop_go_status
+FROM ml_churn_labels cl
+LEFT JOIN ml_feature_store fs
+    ON cl.customer_id = fs.customer_id
+    AND cl.cutoff_date = fs.cutoff_date;
+
+-- ---------------------------------------------------------------------------
+-- VISTA: Resumen del Stop/Go completo (Fase III — Regla Stop/Go)
+-- Un JOIN de todas las vistas de calidad en una sola consulta.
+-- Resultado: 'GO' solo si TODAS las condiciones pasan.
+-- ---------------------------------------------------------------------------
+CREATE VIEW IF NOT EXISTS v_stop_go_summary AS
+SELECT
+    'Key Integrity'                AS check_name,
+    CASE
+        WHEN SUM(dup_rate_pct) = 0 AND (SUM(orphan_rate_pct) IS NULL OR SUM(orphan_rate_pct) = 0)
+        THEN 'PASS'
+        ELSE 'FAIL'
+    END AS status,
+    'dup_rate=0% en todas las tablas, orphan_rate=0%' AS description
+FROM v_key_integrity
+UNION ALL
+SELECT
+    'Business Invariants',
+    CASE WHEN SUM(violations) = 0 THEN 'PASS' ELSE 'FAIL' END,
+    'Sin violaciones temporales ni de integridad de valores'
+FROM v_business_invariants
+UNION ALL
+SELECT
+    'Feature Coverage',
+    CASE WHEN coverage_pct = 100 THEN 'PASS' ELSE 'FAIL' END,
+    'Todos los clientes con etiquetas tienen features calculadas'
+FROM v_feature_coverage;
+
