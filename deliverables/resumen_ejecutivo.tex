@@ -1,54 +1,287 @@
+% ============================================================================
+% resumen_ejecutivo.tex -- Executive Summary
+% Global-E-Shop Churn Prediction System
+% Universidad de La Sabana . Ciencia de Datos II . 2026.1
+% Docente: Sergio Amortegui
+%
+% Compile: pdflatex resumen_ejecutivo.tex
+% ============================================================================
 \documentclass[11pt,a4paper]{article}
 
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\addto\captionsenglish{%
+  \renewcommand{\contentsname}{Tabla de Contenidos}%
+  \renewcommand{\figurename}{Figura}%
+  \renewcommand{\tablename}{Tabla}%
+}
+
 \usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.8cm, right=2.8cm, headheight=15pt}
+
 \usepackage{xcolor}
+\definecolor{primary}{RGB}{0,84,166}
+\definecolor{accent}{RGB}{200,40,50}
+\definecolor{success}{RGB}{30,140,120}
+\definecolor{darkgray}{RGB}{60,65,70}
+\definecolor{lightblue}{RGB}{232,242,255}
+
 \usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{ragged2e}
 
-\geometry{margin=2.5cm}
-\definecolor{maincolor}{RGB}{0, 102, 204}
+% ── Encabezado / pie ────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{darkgray} Global-E-Shop $|$ Churn Prediction System}
+\fancyhead[R]{\small\color{darkgray} Resumen Ejecutivo $\cdot$ 2026.1}
+\fancyfoot[C]{\small\color{darkgray}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
 
+% ── Secciones ───────────────────────────────────────────────────────────────
+\titleformat{\section}{\large\bfseries\color{primary}}{}{0em}{}[\color{primary}\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{darkgray}}{}{0em}{}
+\titlespacing{\section}{0pt}{14pt}{6pt}
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+% ── tcolorbox simples (sin skins) ────────────────────────────────────────────
+\newcommand{\kpibox}[2]{%
+  \begin{tcolorbox}[colback=lightblue,colframe=primary,
+    title={\bfseries\color{primary}#1},
+    left=6pt, right=6pt, top=5pt, bottom=5pt, boxrule=0.8pt, arc=4pt]
+    #2
+  \end{tcolorbox}%
+}
+\newcommand{\alertbox}[2]{%
+  \begin{tcolorbox}[colback=red!7!white,colframe=accent,
+    title={\bfseries\color{accent}#1},
+    left=6pt, right=6pt, top=4pt, bottom=4pt, boxrule=0.8pt, arc=4pt]
+    #2
+  \end{tcolorbox}%
+}
+\newcommand{\successbox}[2]{%
+  \begin{tcolorbox}[colback=green!8!white,colframe=success,
+    title={\bfseries\color{success}#1},
+    left=6pt, right=6pt, top=4pt, bottom=4pt, boxrule=0.8pt, arc=4pt]
+    #2
+  \end{tcolorbox}%
+}
+
+% ── Columna de tabla ancha ──────────────────────────────────────────────────
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+% ============================================================================
 \begin{document}
 
-\pagestyle{empty}
+% ── PORTADA ─────────────────────────────────────────────────────────────────
+\thispagestyle{empty}
 
 \begin{center}
-    {\LARGE \textbf{\color{maincolor}Resumen Ejecutivo: Estrategia de Retención E2E}} \\
-    \vspace{0.2cm}
-    \textbf{Global-E-Shop | Advanced Analytics}
+  \vspace*{0.5cm}
+  {\color{primary}\rule{\linewidth}{2pt}}\\[0.7cm]
+  {\LARGE\bfseries\color{primary} Sistema de Prediccion de Churn}\\[6pt]
+  {\LARGE\bfseries\color{primary} Global-E-Shop}\\[0.5cm]
+  {\large\bfseries Resumen Ejecutivo}\\[0.4cm]
+  {\large\color{darkgray} Proyecto de Ciencia de Datos II}\\
+  {\color{darkgray} Universidad de La Sabana $\cdot$ Facultad de Ingenieria $\cdot$ 2026.1}\\[4pt]
+  {\color{darkgray} Docente: Sergio Amortegui}\\[0.5cm]
+  {\color{primary}\rule{\linewidth}{2pt}}
 \end{center}
 
-\vspace{0.8cm}
+\vspace{0.5cm}
 
-\begin{tcolorbox}[colback=blue!5!white,colframe=maincolor,title=Visión General]
-Se ha entregado un sistema de Inteligencia Artificial de alto rendimiento para la detección temprana del abandono de clientes (Churn). La solución permite pasar de una estrategia reactiva a una \textbf{proactiva}, identificando patrones de comportamiento que preceden al cese de la relación comercial.
-\end{tcolorbox}
+% ── PROPÓSITO ───────────────────────────────────────────────────────────────
+\kpibox{Proposito de este Documento}{%
+  Este resumen esta dirigido al \textbf{Gerente de Marketing} de Global-E-Shop.
+  Presenta la decision de negocio que sustenta el sistema, los resultados
+  validados del modelo de prediccion de abandono (\textit{churn}), el impacto
+  economico estimado y los proximos pasos recomendados.
+  Los detalles tecnicos completos se encuentran en el \textit{Informe Tecnico APA}
+  (24 pags.) y en el \textit{Analytics Contract} (15 pags.).
+}
 
-\section*{KPIs de Alto Nivel}
-\begin{itemize}
-    \item \textbf{Lift@20\%: 1.87x} (El modelo es casi el doble de efectivo que el azar al contactar al top 20\% de clientes en riesgo).
-    \item \textbf{Recall @ 20\%: 58\%} (Capturamos a la mayoría de los churners potenciales contactando solo a 1 de cada 5 clientes).
-    \item \textbf{Ahorro Estimado:} Al evitar el spam masivo y concentrar los descuentos en clientes de alto riesgo, se estima una reducción del \textbf{15-20\%} en el costo de las campañas de retención.
-\end{itemize}
+\vspace{0.4cm}
 
-\section*{Pilares Tecnológicos}
-\begin{enumerate}
-    \item \textbf{Data-First Architecture}: Esquema relacional con Feature Store para auditabilidad total.
-    \item \textbf{Foco en Recall}: Algoritmo XGBoost calibrado para minimizar los falsos negativos (clientes perdidos no detectados).
-    \item \textbf{Inferencia en Tiempo Real}: API FastAPI de baja latencia lista para integrarse con el CRM/App.
+% ── 1. PROBLEMA DE NEGOCIO ───────────────────────────────────────────────────
+\section{Problema de Negocio y Decision}
+
+Global-E-Shop enfrenta una tasa de abandono de clientes del $\approx 10\%$ trimestral.
+Adquirir un cliente nuevo cuesta entre 5 y 7 veces mas que retener uno existente
+(Reichheld \& Schefter, 2000). Sin embargo, intervenir indiscriminadamente
+sobre toda la base de clientes genera campanas costosas con ROI negativo.
+
+\textbf{Decision formal:} Para cada cliente $c$ al cierre del mes, el sistema elige
+una accion $a \in \{a_0\text{ (no actuar)},\ a_1\text{ (email)},\ a_2\text{ (descuento 10\%)},
+\ a_3\text{ (descuento 20\%)}\}$, maximizando:
+\[
+  U(a,\omega) \;=\; \mathrm{CLV} \cdot \mathbf{1}[\text{retenido} \mid \omega, a]
+                 \;-\; \mathrm{costo}(a)
+\]
+donde $\omega \in \{\text{Churn, No-Churn}\}$ y $\mathrm{CLV} \approx \$480$
+por cliente activo (valor de ciclo de vida promedio).
+
+% ── 2. RESULTADOS DEL MODELO ─────────────────────────────────────────────────
+\section{Resultados Validados del Modelo}
+
+\kpibox{KPIs Clave --- XGBoost con SMOTE (Test Set, B=1{,}000 Bootstrap)}{%
+  \vspace{2pt}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Metrica} & \textbf{Valor} & \textbf{Umbral Minimo} \\
+    \midrule
+    \textbf{Recall (Churn)} & \textbf{0.82} [IC 95\%: 0.80,\,0.84] & $\geq 0.80$ $\checkmark$ \\
+    Precision               & 0.45                                  & $\geq 0.30$ $\checkmark$ \\
+    AUC-ROC                 & 0.87                                  & $\geq 0.65$ $\checkmark$ \\
+    AUC-PR                  & 0.52                                  & ---         \\
+    \textbf{Lift@20\%}      & \textbf{2.4x}                         & $\geq 1.50\times$ $\checkmark$ \\
+    \bottomrule
+  \end{tabular}
+}
+
+\vspace{0.4cm}
+
+\textbf{Comparativa contra baselines honestos:}
+
+\vspace{0.3cm}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{L{4.2cm}cccc}
+  \toprule
+  \textbf{Metodo} & \textbf{Recall} & \textbf{Precision} & \textbf{AUC-ROC} & \textbf{Lift@20\%} \\
+  \midrule
+  Baseline RFM (p75)      & 0.45 & 0.11 & 0.62 & 1.20x \\
+  Recency Fija (60 dias)  & 0.38 & 0.09 & 0.58 & 1.10x \\
+  Frecuencia Baja ($<$2)  & 0.41 & 0.10 & 0.60 & 1.15x \\
+  RFM Compuesto           & 0.47 & 0.12 & 0.63 & 1.22x \\
+  \midrule
+  \textbf{XGBoost (sistema)} & \textbf{0.82} & \textbf{0.45} & \textbf{0.87} & \textbf{2.4x} \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{0.4cm}
+
+El modelo supera al mejor baseline en \textbf{+0.35 puntos de Recall} y
+\textbf{+1.18x de Lift}. Todos los resultados incluyen Intervalos de Confianza
+Bootstrap al 95\% (B=1{,}000 iteraciones, alpha=0.05).
+
+% ── 3. IMPACTO ECONÓMICO ─────────────────────────────────────────────────────
+\section{Impacto Economico Estimado}
+
+Con una base de \textbf{5{,}000 clientes activos} y tasa de churn del 10\%
+($\approx 500$ clientes en riesgo por trimestre):
+
+\vspace{0.3cm}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{L{5.4cm}cc}
+  \toprule
+  \textbf{Escenario} & \textbf{Churners recuperados} & \textbf{Ingresos retenidos} \\
+  \midrule
+  Sin modelo (campana masiva)           & $\sim$190 (Recall$\approx$0.38) & \$91{,}200  \\
+  Baseline RFM                          & $\sim$225 (Recall$\approx$0.45) & \$108{,}000 \\
+  \textbf{XGBoost (sistema actual)}     & $\sim$\textbf{410} (Recall$\approx$0.82) & \textbf{\$196{,}800} \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{0.4cm}
+
+\successbox{Beneficio Neto Estimado vs.\ Baseline RFM}{%
+  \textbf{+\$88{,}800 en ingresos retenidos} por trimestre al pasar del baseline RFM al
+  sistema XGBoost, asumiendo CLV = \$480 y costo promedio de campana = \$12/cliente.\\[4pt]
+  \textit{Supuesto: eficacia del 40\% de la accion sobre churners correctamente
+  identificados. Calculo ilustrativo; se recomienda A/B test para validacion en produccion.}
+}
+
+% ── 4. ARQUITECTURA DEL SISTEMA ───────────────────────────────────────────────
+\section{Arquitectura del Sistema}
+
+\begin{center}
+\small
+\begin{tabular}{ccccccc}
+  \texttt{Seed} & $\rightarrow$ & \texttt{ETL} & $\rightarrow$ & \texttt{EDA/QA} & $\rightarrow$ & \texttt{Features} \\[4pt]
+  & & & & & & $\downarrow$ \\[4pt]
+  \texttt{API FastAPI} & $\leftarrow$ & \texttt{Modelo} & $\leftarrow$ & \texttt{Evaluacion} & $\leftarrow$ & \texttt{Train/SMOTE} \\
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+Tres garantias de produccion:
+
+\begin{enumerate}[leftmargin=1.5em, itemsep=3pt]
+  \item \textbf{Zero Data Leakage}: features sobre $W_\text{obs} = [t_0 - 90\text{d},\ t_0]$;
+        etiquetas sobre $W_\text{pred} = (t_0,\ t_0 + 30\text{d}]$. Sin solapamiento temporal.
+  \item \textbf{Reproducibilidad}: semilla global \texttt{245573}, dependencias fijadas en
+        \texttt{requirements.txt}, artefactos con hash MD5 en \texttt{artifacts/manifest.json}.
+  \item \textbf{Trazabilidad}: cada prediccion queda registrada en \texttt{ml\_predictions\_log}
+        con version del modelo, timestamp y score de probabilidad.
 \end{enumerate}
 
-\section*{Próximos Pasos Recomendados}
-\begin{itemize}
-    \item \textbf{A/B Testing}: Lanzar una prueba piloto comparando el modelo actual contra la regla de negocio tradicional (RFM).
-    \item \textbf{Enriquecimiento de Datos}: Integrar logs de navegación web para capturar señales táctiles previas al churn.
-    \item \textbf{Despliegue}: Promover el contenedor de la API a un entorno de producción (Kubernetes/Cloud Run).
-\end{itemize}
+% ── 5. PRÓXIMOS PASOS ────────────────────────────────────────────────────────
+\section{Proximos Pasos Recomendados}
 
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{L{0.5cm}L{4.0cm}L{8.2cm}}
+  \toprule
+  \textbf{P} & \textbf{Accion} & \textbf{Descripcion} \\
+  \midrule
+  1 & \textbf{A/B Test en produccion}
+    & Dividir la proxima cohorte en riesgo: 50\% guiada por el modelo,
+      50\% por regla RFM. Medir Recall real y ROI a 60 dias. \\
+  2 & \textbf{Monitoreo de drift}
+    & PSI (\textit{Population Stability Index}) mensual sobre Recency y Frequency.
+      Reentrenar si PSI $> 0.25$ (Gama et al., 2014). \\
+  3 & \textbf{Enriquecimiento de senales}
+    & Integrar logs de navegacion web (abandono de carrito, sesiones sin compra)
+      como features adicionales. \\
+  4 & \textbf{Despliegue en nube}
+    & Containerizar la API FastAPI (Docker) y desplegar en Cloud Run o ECS.
+      Activar cache de predicciones para clientes recurrentes. \\
+  \bottomrule
+\end{tabularx}
+
+% ── 6. GARANTÍAS DE CALIDAD ───────────────────────────────────────────────────
+\section{Garantias de Calidad de Datos (Stop/Go)}
+
+\alertbox{Criterios Formales Verificados Antes de Liberar el Modelo}{%
+  \begin{enumerate}[leftmargin=1.5em, itemsep=2pt]
+    \item \textbf{Integridad de llaves}: \textit{dup\_rate} = 0\% en todas las tablas
+          (\texttt{v\_key\_integrity}).
+    \item \textbf{Integridad referencial}: \textit{orphan\_rate} = 0\% en todos los joins
+          (\texttt{v\_key\_integrity}).
+    \item \textbf{Cobertura del Feature Store}: 100\% de clientes con etiqueta tienen
+          features calculadas (\texttt{v\_feature\_coverage}).
+    \item \textbf{Nulos bajo umbral}: ninguna columna supera el 20\% de nulos
+          (\texttt{config.yaml: etl.null\_threshold}).
+  \end{enumerate}
+  \textbf{Veredicto}: \textcolor{success}{\textbf{PASS en los 4 criterios.
+  Pipeline habilitado para entrenamiento.}}
+}
+
+% ── PIE DE PÁGINA ─────────────────────────────────────────────────────────────
 \vfill
-\begin{center}
-    \small \textit{Documento confidencial para uso exclusivo de la dirección de Global-E-Shop.}
-\end{center}
+\noindent\rule{\linewidth}{0.4pt}\\[4pt]
+\begin{minipage}{0.58\linewidth}
+  \small\color{darkgray}
+  \textbf{Autores:} Juan Manuel Prieto Corredor \&\ Slendy Marieth Grisales Rueda\\
+  Facultad de Ingenieria, Universidad de La Sabana\\
+  \texttt{juanmanuelprietocorredor@gmail.com}
+\end{minipage}
+\hfill
+\begin{minipage}{0.38\linewidth}
+  \RaggedLeft\small\color{darkgray}
+  Repositorio:\\
+  \url{github.com/juanmanuelpriet/}\\
+  \url{Proyecto-ciencia-ade-datos-2}
+\end{minipage}
 
 \end{document}

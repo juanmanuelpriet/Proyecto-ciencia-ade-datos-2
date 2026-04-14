@@ -289,11 +289,14 @@ Los tres entregables obligatorios del proyecto están en `deliverables/`:
 
 ---
 
-## 👤 Autor
+## 👥 Autores
 
-**Juan Manuel Prieto**  
+**Juan Manuel Prieto Corredor**  
 Facultad de Ingeniería, Universidad de La Sabana  
 📧 juanmanuelprietocorredor@gmail.com
+
+**Slendy Marieth Grisales Rueda**  
+Facultad de Ingeniería, Universidad de La Sabana
 
 ---
 
