@@ -18,6 +18,7 @@ scikit-learn==1.4.2
 xgboost==2.0.3
 imbalanced-learn==0.12.3     # SMOTE, ADASYN, etc.
 joblib==1.4.2                # Model serialization
+shap==0.45.0                 # SHAP feature importance (TreeExplainer for XGBoost)
 
 # --- API ---
 fastapi==0.111.0
@@ -27,6 +28,9 @@ pydantic==2.7.1
 # --- Visualization / Reporting ---
 matplotlib==3.8.4
 seaborn==0.13.2
+
+# --- PDF / Document Processing ---
+pypdf==4.2.0                 # PDF reading/validation (used in audit scripts)
 
 # --- Utilities ---
 pyyaml==6.0.1
