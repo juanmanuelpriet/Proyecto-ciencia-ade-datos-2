@@ -1,0 +1,37 @@
+{
+  "feature_matrix": {
+    "path": "artifacts/data/processed/feature_matrix.parquet",
+    "rows": 4746,
+    "columns": [
+      "recency_days",
+      "frequency_orders",
+      "monetary_total",
+      "monetary_avg_order",
+      "spending_intensity",
+      "trend_slope_30d",
+      "category_diversity",
+      "support_tickets_90d",
+      "avg_satisfaction_score",
+      "avg_delivery_days",
+      "return_rate",
+      "days_since_registration",
+      "customer_segment",
+      "preferred_category",
+      "churn_label"
+    ],
+    "md5": "67b9d0f1b49c0ffc40d8ed478dc0edf3",
+    "churn_rate": 0.1000842815002107,
+    "cutoff_date": "2023-09-30",
+    "updated_at": "2026-04-13T23:39:10.953994"
+  },
+  "model": {
+    "path": "artifacts/models/churn_model_20260413_233913.pkl",
+    "version": "20260413_233913",
+    "md5": "e932a45a2aded09b86e7057cca9bccc3",
+    "threshold": 0.2,
+    "test_recall": 0.5783132530120482,
+    "test_auc_roc": 0.6623170884228957,
+    "cutoff_date": "2023-09-30",
+    "updated_at": "2026-04-13T23:39:13.110009"
+  }
+}
