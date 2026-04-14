@@ -3,9 +3,9 @@
 # Compatible with macOS (Homebrew/MacTeX) and Linux (apt pdflatex)
 # =============================================================================
 
-# ── LaTeX toolchain — uses system PATH (works with MacTeX, MiKTeX, TeX Live) ──
-PDFLATEX = pdflatex
-BIBTEX   = bibtex
+# ── LaTeX toolchain for MiKTeX (macOS) ──────────────────────────────────────
+PDFLATEX = "/Applications/MiKTeX Console.app/Contents/bin/miktex-pdftex" -undump=pdflatex
+BIBTEX   = "/Applications/MiKTeX Console.app/Contents/bin/miktex-bibtex"
 DELIVERABLES_DIR = deliverables
 
 .PHONY: all setup clean run api test report baselines seed help
@@ -75,6 +75,12 @@ report:
 		$(PDFLATEX) -interaction=nonstopmode informe_tecnico.tex && \
 		$(PDFLATEX) -interaction=nonstopmode informe_tecnico.tex
 	@echo "   ✅ informe_tecnico.pdf generado"
+
+	@echo "   → Compilando resumen_ejecutivo.tex ..."
+	cd $(DELIVERABLES_DIR) && \
+		$(PDFLATEX) -interaction=nonstopmode resumen_ejecutivo.tex && \
+		$(PDFLATEX) -interaction=nonstopmode resumen_ejecutivo.tex
+	@echo "   ✅ resumen_ejecutivo.pdf generado"
 
 	@echo ""
 	@echo "📄 PDFs disponibles en: $(DELIVERABLES_DIR)/"
