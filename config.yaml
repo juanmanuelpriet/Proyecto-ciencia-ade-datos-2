@@ -1,0 +1,96 @@
+# =============================================================================
+# config.yaml — Fuente única de verdad para el sistema de Churn
+# Todos los módulos leen de este archivo. Cambiar aquí → cambia todo.
+# =============================================================================
+
+project:
+  name: "Global-E-Shop Churn Predictor"
+  version: "1.0.0"
+  random_seed: 245573         # Semilla global para reproducibilidad total
+
+paths:
+  db: "artifacts/data/churn.db"
+  raw_data: "artifacts/data/raw/"
+  processed_data: "artifacts/data/processed/"
+  models: "artifacts/models/"
+  figures: "artifacts/figures/"
+  manifest: "artifacts/manifest.json"
+
+temporal:
+  # Ventana de observación: 90 días hacia atrás desde la fecha de corte
+  # Ventana de predicción: 30 días hacia adelante (¿se va el cliente?)
+  # Esto evita data leakage: jamás usamos info del futuro como feature
+  cutoff_date: "2023-09-30"        # Fecha de corte train vs test
+  test_start_date: "2023-10-01"    # Test set empieza aquí
+  observation_window_days: 90      # Cuántos días de historia usamos
+  prediction_window_days: 30       # Cuántos días al futuro predecimos
+
+etl:
+  # Umbral de nulos: si una columna tiene > 40% nulos, se dropea
+  null_threshold: 0.40
+  # Outlier capping por IQR; 1.5 es conservador, 3.0 es permisivo
+  iqr_factor: 1.5
+
+features:
+  # Features numéricas que van al modelo (post feature engineering)
+  numeric:
+    - recency_days
+    - frequency_orders
+    - monetary_total
+    - monetary_avg_order
+    - spending_intensity
+    - trend_slope_30d
+    - category_diversity
+    - support_tickets_90d
+    - avg_delivery_days
+    - return_rate
+    - days_since_registration
+  # Features categóricas (one-hot encoded en pipeline)
+  categorical:
+    - preferred_category
+    - customer_segment
+
+model:
+  # XGBoost como clasificador base (GBDT es robusto con tabulares)
+  classifier: "XGBoostClassifier"
+  hyperparams:
+    n_estimators: 500
+    max_depth: 6           # Profundidad moderada para evitar sobreajuste
+    learning_rate: 0.05    # Learning rate bajo + más árboles = mejor generalización
+    subsample: 0.8         # Stochastic boosting reduce varianza
+    colsample_bytree: 0.8  # Feature subsampling (similar a random forests)
+    min_child_weight: 5    # Regularización: mínimo de muestras en hoja
+    gamma: 1.0             # Poda agresiva de nodos sin ganancia real
+    reg_alpha: 0.1         # Regularización L1 (sparse features)
+    reg_lambda: 1.0        # Regularización L2 (default XGBoost)
+    # scale_pos_weight calculado dinámicamente como (n_neg / n_pos)
+    # Se usa SMOTE primero; scale_pos_weight es backup en caso de bajo ratio
+    use_label_encoder: false
+    eval_metric: "aucpr"   # AUC-PR es más informativo que AUC-ROC en datasets desbalanceados
+
+  smote:
+    # SMOTE: Synthetic Minority Oversampling Technique
+    # Solo se aplica en TRAIN set, NUNCA en validation/test
+    sampling_strategy: 0.5  # Llevar la clase minoritaria al 50% de la mayoritaria
+    k_neighbors: 5           # 5 vecinos es el default robusto de Chawla et al. (2002)
+    random_state: 42
+
+  threshold:
+    # Ajuste de umbral post-entrenamiento para maximizar Recall
+    # Grid search sobre [0.2, 0.5] con paso 0.01
+    optimize: true
+    min_recall: 0.80          # Recall mínimo aceptable
+    min_precision: 0.30       # Precision mínima para evitar spam masivo
+    grid_start: 0.20
+    grid_end: 0.60
+    grid_step: 0.01
+
+evaluation:
+  bootstrap_iterations: 1000   # Iteraciones para Bootstrap CI (Recall)
+  bootstrap_alpha: 0.05        # Nivel de significancia (95% CI)
+  cv_folds: 5                  # Cross-validation temporal (TimeSeriesSplit)
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  reload: true

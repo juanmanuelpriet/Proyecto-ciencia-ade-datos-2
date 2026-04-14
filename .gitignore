@@ -1,0 +1,35 @@
+# Project-specific ignores
+artifacts/data/
+artifacts/models/
+*.db
+*.parquet
+*.pkl
+artifacts/pipeline.log
+artifacts/manifest.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+
+# LaTeX / PDF
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# System
+.DS_Store
+Thumbs.db
+
+# Misc
+test.pdf
+scratch/

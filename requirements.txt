@@ -1,0 +1,35 @@
+# =============================================================================
+# Customer Churn Prediction System — Requirements
+# Pinned for full reproducibility (deterministic builds)
+# =============================================================================
+
+# --- Core Data ---
+pandas==2.2.2
+numpy==1.26.4
+scipy==1.13.0
+pyarrow==16.0.0              # Required for parquet support
+
+# --- Database ---
+sqlalchemy==2.0.30
+# SQLite is included in Python stdlib; for production swap to psycopg2-binary
+
+# --- Machine Learning ---
+scikit-learn==1.4.2
+xgboost==2.0.3
+imbalanced-learn==0.12.3     # SMOTE, ADASYN, etc.
+joblib==1.4.2                # Model serialization
+
+# --- API ---
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+pydantic==2.7.1
+
+# --- Visualization / Reporting ---
+matplotlib==3.8.4
+seaborn==0.13.2
+
+# --- Utilities ---
+pyyaml==6.0.1
+loguru==0.7.2
+tqdm==4.66.4
+pytest==8.2.0

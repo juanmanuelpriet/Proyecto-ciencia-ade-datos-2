@@ -1,0 +1,54 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+
+\geometry{margin=2.5cm}
+\definecolor{maincolor}{RGB}{0, 102, 204}
+
+\begin{document}
+
+\pagestyle{empty}
+
+\begin{center}
+    {\LARGE \textbf{\color{maincolor}Resumen Ejecutivo: Estrategia de Retención E2E}} \\
+    \vspace{0.2cm}
+    \textbf{Global-E-Shop | Advanced Analytics}
+\end{center}
+
+\vspace{0.8cm}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=maincolor,title=Visión General]
+Se ha entregado un sistema de Inteligencia Artificial de alto rendimiento para la detección temprana del abandono de clientes (Churn). La solución permite pasar de una estrategia reactiva a una \textbf{proactiva}, identificando patrones de comportamiento que preceden al cese de la relación comercial.
+\end{tcolorbox}
+
+\section*{KPIs de Alto Nivel}
+\begin{itemize}
+    \item \textbf{Lift@20\%: 1.87x} (El modelo es casi el doble de efectivo que el azar al contactar al top 20\% de clientes en riesgo).
+    \item \textbf{Recall @ 20\%: 58\%} (Capturamos a la mayoría de los churners potenciales contactando solo a 1 de cada 5 clientes).
+    \item \textbf{Ahorro Estimado:} Al evitar el spam masivo y concentrar los descuentos en clientes de alto riesgo, se estima una reducción del \textbf{15-20\%} en el costo de las campañas de retención.
+\end{itemize}
+
+\section*{Pilares Tecnológicos}
+\begin{enumerate}
+    \item \textbf{Data-First Architecture}: Esquema relacional con Feature Store para auditabilidad total.
+    \item \textbf{Foco en Recall}: Algoritmo XGBoost calibrado para minimizar los falsos negativos (clientes perdidos no detectados).
+    \item \textbf{Inferencia en Tiempo Real}: API FastAPI de baja latencia lista para integrarse con el CRM/App.
+\end{enumerate}
+
+\section*{Próximos Pasos Recomendados}
+\begin{itemize}
+    \item \textbf{A/B Testing}: Lanzar una prueba piloto comparando el modelo actual contra la regla de negocio tradicional (RFM).
+    \item \textbf{Enriquecimiento de Datos}: Integrar logs de navegación web para capturar señales táctiles previas al churn.
+    \item \textbf{Despliegue}: Promover el contenedor de la API a un entorno de producción (Kubernetes/Cloud Run).
+\end{itemize}
+
+\vfill
+\begin{center}
+    \small \textit{Documento confidencial para uso exclusivo de la dirección de Global-E-Shop.}
+\end{center}
+
+\end{document}

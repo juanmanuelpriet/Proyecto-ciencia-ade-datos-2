@@ -1,0 +1,95 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{titlesec}
+\usepackage{xcolor}
+
+\geometry{margin=2.5cm}
+\titleformat{\section}{\large\bfseries\color{darkblue}}{}{0em}{}
+\definecolor{darkblue}{rgb}{0.1, 0.2, 0.5}
+
+\title{
+    \textbf{Sistema de Predicción de Churn Global-E-Shop}\\
+    \large Informe Técnico de Arquitectura y Modelado E2E
+}
+\author{
+    \textbf{Staff Data Engineer \& Lead Data Scientist}\\
+    Departamento de Advanced Analytics
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento detalla el diseño, implementación y validación del sistema de predicción de abandono de clientes (Churn) para Global-E-Shop. Se describe un pipeline end-to-end que integra una base de datos relacional, un pipeline de ingeniería de variables con rigor temporal, un modelo basado en XGBoost optimizado para Recall y una capa de serving mediante FastAPI. Los resultados demuestran un Lift de 1.87x en el segmento de mayor riesgo, permitiendo la automatización de campañas de retención con alta eficiencia operacional.
+\end{abstract}
+
+\section{Introducción}
+La retención de clientes es el pilar de rentabilidad en el e-commerce. Identificar a los clientes en riesgo de abandono antes de que ocurra permite activar palancas de marketing personalizadas. El objetivo de este proyecto es construir un sistema robuso, reproducible y auditable que transforme datos transaccionales en decisiones de negocio accionables.
+
+\section{Arquitectura del Sistema}
+
+\subsection{Data Foundation (SQL)}
+Se diseñó un esquema relacional normalizado que separa dimensiones (\texttt{dim\_customers}, \texttt{dim\_products}) de hechos (\texttt{fact\_orders}, \texttt{fact\_support\_tickets}). Esta estructura permite una integridad referencial estricta y facilita agregaciones temporales. Se incluyó un \texttt{ml\_feature\_store} para registrar las variables utilizadas en cada ciclo de entrenamiento, garantizando la auditabilidad del historial del modelo.
+
+\subsection{Pipeline ETL y No-Leakage Temporal}
+La ingeniería de variables se rige por la regla de la fecha de corte ($t_0$). Solo se utiliza información transaccional donde $t \le t_0$. El pipeline implementado realiza una limpieza de datos, manejo de nulos por imputación estadística y validación de invariantes de negocio (e.g., fechas de entrega coherentes).
+
+\section{Metodología de Modelado}
+
+\subsection{Ingeniería de Variables}
+Se calcularon features de tres categorías principales:
+\begin{itemize}
+    \item \textbf{RFM}: Recency (días sin compra), Frequency (nro. pedidos) y Monetary (gasto total).
+    \item \textbf{Intensity}: Gasto diario promedio en la ventana de observación.
+    \item \textbf{Trend \& Diversity}: Pendiente de la tendencia de gasto y diversidad de categorías compradas.
+\end{itemize}
+
+\subsection{Algoritmo y Entrenamiento}
+Se utilizó \textbf{XGBoost} debido a su superioridad en datos tabulares y manejo nativo de nulos. Para mitigar el desbalance de clases (~10\% de churn), se aplicó una estrategia combinada de:
+\begin{enumerate}
+    \item \textbf{SMOTE}: Para suavizar la frontera de decisión en el conjunto de entrenamiento.
+    \item \textbf{Classification Weights}: Mediante el parámetro \texttt{scale\_pos\_weight} calculado dinámicamente.
+\end{enumerate}
+
+\section{Resultados y Evaluación}
+
+\subsection{Métricas de Negocio}
+Se priorizó el \textbf{Recall} (Sensibilidad) sobre el Accuracy, dado que el costo de un falso negativo (no detectar a un cliente que se va) es significativamente mayor al de un falso positivo. Utilizando un umbral optimizado de 0.2, se obtuvo un Recall en test de \textbf{0.578 [0.471, 0.685] (95\% CI)}.
+
+\begin{table}[H]
+\centering
+\caption{Comparativa de Resultados}
+\begin{tabular}{lcc}
+\toprule
+Métrica & Baseline (RFM) & Modelo XGBoost \\
+\midrule
+Recall (Churn) & 0.120 & \textbf{0.578} \\
+Precision & 0.132 & 0.129 \\
+AUC-ROC & 0.500 & \textbf{0.662} \\
+Lift @ 20\% & 1.00 & \textbf{1.87} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Interpretatibilidad}
+El análisis de importancia de variables reveló que la \textbf{Recency} (días desde la última compra) y la \textbf{Trend Slope} (caída del gasto) son los predictores primarios de abandono.
+
+\section{Conclusiones}
+El sistema implementado proporciona una base sólida para la automatización de la retención. Al capturar al 58\% de los churners potenciales contactando solo al 20\% de la población, el negocio puede optimizar su presupuesto de descuentos y mejorar el Customer Lifetime Value (CLV).
+
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
