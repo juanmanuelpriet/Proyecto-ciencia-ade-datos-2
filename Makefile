@@ -62,28 +62,34 @@ baselines:
 report:
 	@echo "📚 Compilando entregables LaTeX → PDF..."
 	@command -v $(PDFLATEX) >/dev/null 2>&1 || \
-		{ echo "❌ pdflatex no encontrado. Instalar: brew install --cask mactex (macOS) o sudo apt-get install texlive-full (Linux)"; exit 1; }
+		{ echo "❌ pdflatex no encontrado. Verifique la ruta en el Makefile."; exit 1; }
+
+	@echo "   → Sincronizando fuentes desde report/ ..."
+	cp report/informe_tecnico.tex deliverables/
+	cp report/references.bib deliverables/
 
 	@echo "   → Compilando contrato_retencion.tex ..."
 	cd $(DELIVERABLES_DIR) && \
-		$(PDFLATEX) -interaction=nonstopmode contrato_retencion.tex && \
-		$(PDFLATEX) -interaction=nonstopmode contrato_retencion.tex
+		$(PDFLATEX) -interaction=nonstopmode contrato_retencion.tex > /dev/null && \
+		$(PDFLATEX) -interaction=nonstopmode contrato_retencion.tex > /dev/null
 	@echo "   ✅ contrato_retencion.pdf generado"
-
-	@echo "   → Compilando informe_tecnico.tex (2 pasadas para referencias) ..."
-	cd $(DELIVERABLES_DIR) && \
-		$(PDFLATEX) -interaction=nonstopmode informe_tecnico.tex && \
-		$(PDFLATEX) -interaction=nonstopmode informe_tecnico.tex
-	@echo "   ✅ informe_tecnico.pdf generado"
 
 	@echo "   → Compilando resumen_ejecutivo.tex ..."
 	cd $(DELIVERABLES_DIR) && \
-		$(PDFLATEX) -interaction=nonstopmode resumen_ejecutivo.tex && \
-		$(PDFLATEX) -interaction=nonstopmode resumen_ejecutivo.tex
+		$(PDFLATEX) -interaction=nonstopmode resumen_ejecutivo.tex > /dev/null && \
+		$(PDFLATEX) -interaction=nonstopmode resumen_ejecutivo.tex > /dev/null
 	@echo "   ✅ resumen_ejecutivo.pdf generado"
 
+	@echo "   → Compilando informe_tecnico.tex (4 pasadas para índice/bib) ..."
+	cd $(DELIVERABLES_DIR) && \
+		$(PDFLATEX) -interaction=nonstopmode informe_tecnico.tex > /dev/null && \
+		$(BIBTEX) informe_tecnico > /dev/null || true && \
+		$(PDFLATEX) -interaction=nonstopmode informe_tecnico.tex > /dev/null && \
+		$(PDFLATEX) -interaction=nonstopmode informe_tecnico.tex > /dev/null
+	@echo "   ✅ informe_tecnico.pdf generado (con índice y referencias)"
+
 	@echo ""
-	@echo "📄 PDFs disponibles en: $(DELIVERABLES_DIR)/"
+	@echo "📄 PDFs finales disponibles en: $(DELIVERABLES_DIR)/"
 	@ls -lh $(DELIVERABLES_DIR)/*.pdf 2>/dev/null || echo "(no se encontraron PDFs)"
 
 # ─── Limpieza ─────────────────────────────────────────────────────────────────
